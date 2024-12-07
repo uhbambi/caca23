@@ -1,16 +1,13 @@
 {
-  "name": "xd",
+  "name": "tu-proyecto",
   "version": "1.0.0",
-  "description": "",
-  "main": "caca1.js",
+  "main": "los2.cjs",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node los2.cjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.16.3",
-    "puppeteer": "^23.10.1"
+    "puppeteer": "^19.0.0"
+    "discord.js": "^14.0.0"
   }
 }
