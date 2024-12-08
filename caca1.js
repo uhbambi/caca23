@@ -20,7 +20,9 @@ const countryFlags = {
 
 // Configura el bot de Discord
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
-const DISCORD_TOKEN = 'tutoken'; // Pon tu token aquí
+require('dotenv').config();
+
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
 // Función para monitorear la página
 async function monitorPage() {
