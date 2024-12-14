@@ -20,11 +20,15 @@ require('dotenv').config();
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Cambia esto por tu canal
 
+// Ruta de Google Chrome
+const chromePath = '/usr/bin/google-chrome'; // Aquí coloca la ruta a tu instalación de Chrome, si no está en este directorio.
+
 // Monitorear la página
 async function monitorPage() {
     const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        headless: true, // Asegura que Puppeteer use el modo headless
+        executablePath: chromePath, // Usa la ruta de Google Chrome
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Recomendado para entornos limitados (como servidores)
     });
 
     const page = await browser.newPage();
