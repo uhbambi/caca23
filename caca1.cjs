@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer';
-import { Client, GatewayIntentBits } from 'discord.js';
+const puppeteer = require('puppeteer');
+const { Client, GatewayIntentBits } = require('discord.js');
 
 // Mapeo de códigos de país a banderas en formato código de país
 const countryFlags = {
@@ -24,9 +24,14 @@ require('dotenv').config();
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
+
 // Función para monitorear la página
 async function monitorPage() {
-    const browser = await puppeteer.launch({ headless: false }); // Ejecuta Puppeteer
+    const browser = await puppeteer.launch({
+        headless: true, // Cambiar a "false" si necesitas ver el navegador
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Configuraciones para entornos limitados
+    });
+
     const page = await browser.newPage();
     await page.goto('https://pixelplanet.fun/chat/907'); // Pon la URL de la página
 
@@ -35,25 +40,17 @@ async function monitorPage() {
 
     // Expón una función para enviar mensajes a Discord
     await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode) => {
-        // Filtra las menciones "everyone" y "here"
-        const filteredMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]'); // Reemplaza las menciones por un texto
-
-        // Elimina la parte repetida en el mensaje (ejemplo "Portu: Portu:")
+        const filteredMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]');
         const cleanMessage = filteredMessage.replace(/^.*?: (.*)$/, '$1').trim();
-
-        // Si el mensaje comienza con '#d,' agrega el link de PixelPlanet
-        const updatedMessage = cleanMessage.startsWith("#d,") 
-            ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}` 
+        const updatedMessage = cleanMessage.startsWith("#d,")
+            ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}`
             : cleanMessage;
 
-        // Obtener la bandera usando el código de país
-        const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz']; // Usa el emoji de Martillo y Pico si no se encuentra el código
-
-        // Formatea el mensaje con la bandera, nombre del usuario y la hora
+        const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz'];
         const formattedMessage = `${countryFlag} | **${username}** [${time}] \`${updatedMessage}\``;
 
         const channel = await client.channels.fetch(CHANNEL_ID);
-        await channel.send(formattedMessage); // Envía el mensaje formateado a Discord
+        await channel.send(formattedMessage);
     });
 
     // Inicia un MutationObserver para observar los nuevos mensajes
@@ -62,23 +59,19 @@ async function monitorPage() {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) { // Aseguramos que sea un nuevo mensaje
+                        if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) {
                             const time = node.querySelector('.chatts') ? node.querySelector('.chatts').innerText : 'Hora no disponible';
                             const user = node.querySelector('.chatname') ? node.querySelector('.chatname').innerText : 'Usuario no disponible';
                             const text = node.querySelector('.msg') ? node.querySelector('.msg').innerText : 'Mensaje no disponible';
-
-                            // Extraer el código del país desde el atributo 'title' de la bandera
                             const countryCode = node.querySelector('.chatflag') ? node.querySelector('.chatflag').getAttribute('title') : 'unknown';
 
-                            // Llama a la función expuesta para enviar el mensaje a Discord
-                            window.sendMessageToDiscord(text, user, time, countryCode); 
+                            window.sendMessageToDiscord(text, user, time, countryCode);
                         }
                     });
                 }
             }
         });
 
-        // Comienza a observar el contenedor de mensajes (el nodo <li> con clase "chatmsg")
         const container = document.querySelector('.chatmsg');
         if (container) {
             observer.observe(container.parentElement, { childList: true, subtree: true });
@@ -89,7 +82,26 @@ async function monitorPage() {
 // Inicia el bot de Discord
 client.once('ready', () => {
     console.log('Bot conectado a Discord');
-    monitorPage(); // Comienza a monitorear la página
+    monitorPage();
+});
+const { exec } = require('child_process');
+
+// Verificar si Google Chrome está instalado
+exec('which google-chrome', (err, stdout, stderr) => {
+    if (err) {
+        console.log('Error al verificar Google Chrome:', stderr);
+    } else {
+        console.log('Ruta de Google Chrome:', stdout);
+    }
 });
 
-client.login(DISCORD_TOKEN); // Inicia sesión con el token del bot
+// Verificar si Chromium está instalado
+exec('which chromium', (err, stdout, stderr) => {
+    if (err) {
+        console.log('Error al verificar Chromium:', stderr);
+    } else {
+        console.log('Ruta de Chromium:', stdout);
+    }
+});
+
+client.login(DISCORD_TOKEN);

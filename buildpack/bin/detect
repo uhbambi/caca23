@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# El script detecta si debe usar el Buildpack basándose en el tipo de proyecto
+echo "Detectando el entorno... Buildpack activado"
+exit 0
