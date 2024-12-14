@@ -4,7 +4,7 @@
   "description": "Proyecto de Puppeteer y Discord.js",
   "main": "los2.cjs",
 "scripts": {
-    "setup-and-start": "apt-get update && apt-get install -y wget && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && apt-get install -y ./google-chrome-stable_current_amd64.deb && npm start",
+    "setup-and-start": "sudo apt-get update && apt-get install -y wget && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && apt-get install -y ./google-chrome-stable_current_amd64.deb && npm start",
     "start": "node los2.cjs",
     "install-chrome": "puppeteer install",
     "postinstall": "npm run install-chrome",
