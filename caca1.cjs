@@ -28,17 +28,17 @@ const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
 // Función para monitorear la página
 async function monitorPage() {
     const browser = await puppeteer.launch({
-        headless: true, // Cambiar a "false" si necesitas ver el navegador
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Configuraciones para entornos limitados
+        headless: true,  // Habilitar modo headless
+        executablePath: '/usr/bin/google-chrome',  // Path a Google Chrome (si está instalado)
+        args: ['--no-sandbox', '--disable-setuid-sandbox']  // Para entornos restringidos
     });
 
     const page = await browser.newPage();
-    await page.goto('https://pixelplanet.fun/chat/907'); // Pon la URL de la página
+    await page.goto('https://pixelplanet.fun/chat/907'); // URL de la página
 
-    // Espera hasta que el contenedor de mensajes esté disponible
-    await page.waitForSelector('.chatmsg'); // Esperamos al contenedor de mensajes
+    await page.waitForSelector('.chatmsg');  // Espera a que los mensajes estén disponibles
 
-    // Expón una función para enviar mensajes a Discord
+    // Exponer la función para enviar mensajes a Discord
     await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode) => {
         const filteredMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]');
         const cleanMessage = filteredMessage.replace(/^.*?: (.*)$/, '$1').trim();
@@ -53,7 +53,7 @@ async function monitorPage() {
         await channel.send(formattedMessage);
     });
 
-    // Inicia un MutationObserver para observar los nuevos mensajes
+    // Observar los mensajes nuevos
     await page.evaluate(() => {
         const observer = new MutationObserver((mutationsList) => {
             for (const mutation of mutationsList) {
@@ -84,9 +84,12 @@ client.once('ready', () => {
     console.log('Bot conectado a Discord');
     monitorPage();
 });
-const { exec } = require('child_process');
+
+// Iniciar sesión con el token del bot de Discord
+client.login(DISCORD_TOKEN);
 
 // Verificar si Google Chrome está instalado
+const { exec } = require('child_process');
 exec('which google-chrome', (err, stdout, stderr) => {
     if (err) {
         console.log('Error al verificar Google Chrome:', stderr);
@@ -104,4 +107,3 @@ exec('which chromium', (err, stdout, stderr) => {
     }
 });
 
-client.login(DISCORD_TOKEN);
