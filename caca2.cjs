@@ -26,74 +26,74 @@ const chromePath = '/usr/bin/google-chrome'; // Aquí coloca la ruta a tu instal
 // Monitorear la página
 const startBot = async () => {
   const browser = await puppeteer.launch({
-    executablePath: puppeteer.executablePath(), // Obtiene la ruta automáticamente
+    executablePath: chromePath,
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'], // Importante para entornos sin GUI como Koyeb
   });
 
-    const page = await browser.newPage();
-    await page.goto('https://pixelplanet.fun/chat/1');
+  const page = await browser.newPage();
+  await page.goto('https://pixelplanet.fun/chat/1');
 
-    // Esperar el contenedor de mensajes
-    await page.waitForSelector('.chatmsg');
+  // Esperar el contenedor de mensajes
+  await page.waitForSelector('.chatmsg');
 
-    // Exponer función para enviar mensajes a Discord
-    await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode, type) => {
-        if (username.toLowerCase() === 'sallbot' || type === 'event') {
-            const cleanMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]').trim();
-            const updatedMessage = cleanMessage.startsWith("#d,") ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}` : cleanMessage;
+  // Exponer función para enviar mensajes a Discord
+  await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode, type) => {
+    if (username.toLowerCase() === 'sallbot' || type === 'event') {
+      const cleanMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]').trim();
+      const updatedMessage = cleanMessage.startsWith("#d,") ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}` : cleanMessage;
 
-            const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz'];
-            const formattedMessage = type === 'event'
-                ? `:robot: | **Evento** [${time}] \`${updatedMessage}\``
-                : `${countryFlag} | **${username}** [${time}] \`${updatedMessage}\``;
+      const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz'];
+      const formattedMessage = type === 'event'
+        ? `:robot: | **Evento** [${time}] \`${updatedMessage}\``
+        : `${countryFlag} | **${username}** [${time}] \`${updatedMessage}\``;
 
-            const channel = await client.channels.fetch(CHANNEL_ID);
-            await channel.send(formattedMessage);
-        }
-    });
+      const channel = await client.channels.fetch(CHANNEL_ID);
+      await channel.send(formattedMessage);
+    }
+  });
 
-    // Configurar MutationObserver
-    await page.evaluate(() => {
-        const observer = new MutationObserver(mutationsList => {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) {
-                            const time = node.querySelector('.chatts')?.innerText || 'Hora no disponible';
-                            const user = node.querySelector('.chatname')?.innerText || 'Usuario desconocido';
-                            const text = node.querySelector('.msg')?.innerText || 'Mensaje vacío';
-                            const type = node.querySelector('.msg.event') ? 'event' : 'message';
-                            const countryCode = node.querySelector('.chatflag')?.getAttribute('title') || 'unknown';
+  // Configurar MutationObserver
+  await page.evaluate(() => {
+    const observer = new MutationObserver(mutationsList => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) {
+              const time = node.querySelector('.chatts')?.innerText || 'Hora no disponible';
+              const user = node.querySelector('.chatname')?.innerText || 'Usuario desconocido';
+              const text = node.querySelector('.msg')?.innerText || 'Mensaje vacío';
+              const type = node.querySelector('.msg.event') ? 'event' : 'message';
+              const countryCode = node.querySelector('.chatflag')?.getAttribute('title') || 'unknown';
 
-                            window.sendMessageToDiscord(text, user, time, countryCode, type);
-                        }
-                    });
-                }
+              window.sendMessageToDiscord(text, user, time, countryCode, type);
             }
-        });
-
-        const container = document.querySelector('.chatmsg');
-        if (container) observer.observe(container.parentElement, { childList: true, subtree: true });
+          });
+        }
+      }
     });
-}
 
-// Verificar instalación de Chrome/Chromium
+    const container = document.querySelector('.chatmsg');
+    if (container) observer.observe(container.parentElement, { childList: true, subtree: true });
+  });
+};
+
+// Verificar instalación de Google Chrome
 const { exec } = require('child_process');
 exec('which google-chrome', (err, stdout, stderr) => {
-    if (err) console.log('Google Chrome no encontrado:', stderr.trim());
-    else console.log('Google Chrome encontrado:', stdout.trim());
+  if (err) console.log('Google Chrome no encontrado:', stderr.trim());
+  else console.log('Google Chrome encontrado:', stdout.trim());
 });
 
 exec('which chromium', (err, stdout, stderr) => {
-    if (err) console.log('Chromium no encontrado:', stderr.trim());
-    else console.log('Chromium encontrado:', stdout.trim());
+  if (err) console.log('Chromium no encontrado:', stderr.trim());
+  else console.log('Chromium encontrado:', stdout.trim());
 });
 
 // Inicializar el bot
 client.once('ready', () => {
-    console.log('Bot conectado a Discord');
-    monitorPage().catch(console.error);
+  console.log('Bot conectado a Discord');
+  startBot().catch(console.error);
 });
 
 client.login(DISCORD_TOKEN);
