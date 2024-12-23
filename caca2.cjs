@@ -23,12 +23,18 @@ const CHANNEL_ID = '1314014143044386877'; // Cambia esto por tu canal
 const chromePath = '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome'; // Ruta predeterminada de Puppeteer
 
 // Monitorear la página
-const startBot = async () => {
-  const browser = await puppeteer.launch({
-    executablePath: chromePath,
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+const browser = await puppeteer.launch({
+  executablePath: '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome', // Cambia según sea necesario
+  headless: true,
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--single-process',
+  ],
+});
+
 
   const page = await browser.newPage();
   await page.goto('https://pixelplanet.fun/chat/1');
