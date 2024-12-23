@@ -6,7 +6,7 @@
 "scripts": {
     "setup-and-start": "npm run install-chrome && npm run start",
     "start": "node los2.cjs",
-    "install-chrome": "puppeteer install --force", // Fuerza la instalación de Chromium
+    "install-chrome": "puppeteer install --force", 
     "postinstall": "puppeteer install --force",
     "debug": "node -e \"console.log(require('puppeteer').executablePath())\"",
     "clean-install": "rm -rf node_modules && npm install"
