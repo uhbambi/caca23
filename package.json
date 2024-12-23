@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "Bot de Discord con Puppeteer para monitorear y reportar actividades.",
   "main": "los2.cjs",
-  "scripts": {
+"scripts": {
     "setup-and-start": "npm run install-chrome && npm run start",
     "start": "node los2.cjs",
-    "install-chrome": "puppeteer install",
+    "install-chrome": "puppeteer install --force", // Fuerza la instalación de Chromium
     "postinstall": "puppeteer install --force",
-    "clean-install": "rm -rf node_modules && npm install",
-    "debug": "node -e \"console.log('Puppeteer Path:', require('puppeteer').executablePath());\"",
+    "debug": "node -e \"console.log(require('puppeteer').executablePath())\"",
+    "clean-install": "rm -rf node_modules && npm install"
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
