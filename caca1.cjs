@@ -33,56 +33,56 @@ const startBot = async () => {
     args: ['--no-sandbox', '--disable-setuid-sandbox'], // Importante para entornos sin GUI como Koyeb
   });
 
-    const page = await browser.newPage();
-    await page.goto('https://pixelplanet.fun/chat/907'); // URL de la página
+  const page = await browser.newPage();
+  await page.goto('https://pixelplanet.fun/chat/907'); // URL de la página
 
-    await page.waitForSelector('.chatmsg');  // Espera a que los mensajes estén disponibles
+  await page.waitForSelector('.chatmsg');  // Espera a que los mensajes estén disponibles
 
-    // Exponer la función para enviar mensajes a Discord
-    await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode) => {
-        const filteredMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]');
-        const cleanMessage = filteredMessage.replace(/^.*?: (.*)$/, '$1').trim();
-        const updatedMessage = cleanMessage.startsWith("#d,")
-            ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}`
-            : cleanMessage;
+  // Exponer la función para enviar mensajes a Discord
+  await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode) => {
+    const filteredMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]');
+    const cleanMessage = filteredMessage.replace(/^.*?: (.*)$/, '$1').trim();
+    const updatedMessage = cleanMessage.startsWith("#d,")
+        ? `${cleanMessage} https://pixelplanet.fun/${cleanMessage}`
+        : cleanMessage;
 
-        const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz'];
-        const formattedMessage = `${countryFlag} | **${username}** [${time}] \`${updatedMessage}\``;
+    const countryFlag = countryFlags[countryCode.toLowerCase()] || countryFlags['zz'];
+    const formattedMessage = `${countryFlag} | **${username}** [${time}] \`${updatedMessage}\``;
 
-        const channel = await client.channels.fetch(CHANNEL_ID);
-        await channel.send(formattedMessage);
-    });
+    const channel = await client.channels.fetch(CHANNEL_ID);
+    await channel.send(formattedMessage);
+  });
 
-    // Observar los mensajes nuevos
-    await page.evaluate(() => {
-        const observer = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) {
-                            const time = node.querySelector('.chatts') ? node.querySelector('.chatts').innerText : 'Hora no disponible';
-                            const user = node.querySelector('.chatname') ? node.querySelector('.chatname').innerText : 'Usuario no disponible';
-                            const text = node.querySelector('.msg') ? node.querySelector('.msg').innerText : 'Mensaje no disponible';
-                            const countryCode = node.querySelector('.chatflag') ? node.querySelector('.chatflag').getAttribute('title') : 'unknown';
+  // Observar los mensajes nuevos
+  await page.evaluate(() => {
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.matches('.chatmsg')) {
+              const time = node.querySelector('.chatts') ? node.querySelector('.chatts').innerText : 'Hora no disponible';
+              const user = node.querySelector('.chatname') ? node.querySelector('.chatname').innerText : 'Usuario no disponible';
+              const text = node.querySelector('.msg') ? node.querySelector('.msg').innerText : 'Mensaje no disponible';
+              const countryCode = node.querySelector('.chatflag') ? node.querySelector('.chatflag').getAttribute('title') : 'unknown';
 
-                            window.sendMessageToDiscord(text, user, time, countryCode);
-                        }
-                    });
-                }
+              window.sendMessageToDiscord(text, user, time, countryCode);
             }
-        });
-
-        const container = document.querySelector('.chatmsg');
-        if (container) {
-            observer.observe(container.parentElement, { childList: true, subtree: true });
+          });
         }
+      }
     });
-}
+
+    const container = document.querySelector('.chatmsg');
+    if (container) {
+      observer.observe(container.parentElement, { childList: true, subtree: true });
+    }
+  });
+};
 
 // Inicia el bot de Discord
 client.once('ready', () => {
-    console.log('Bot conectado a Discord');
-    monitorPage();
+  console.log('Bot conectado a Discord');
+  startBot();  // Llama a la función correcta para iniciar la monitorización
 });
 
 // Iniciar sesión con el token del bot de Discord
@@ -91,19 +91,18 @@ client.login(DISCORD_TOKEN);
 // Verificar si Google Chrome está instalado
 const { exec } = require('child_process');
 exec('which google-chrome', (err, stdout, stderr) => {
-    if (err) {
-        console.log('Error al verificar Google Chrome:', stderr);
-    } else {
-        console.log('Ruta de Google Chrome:', stdout);
-    }
+  if (err) {
+    console.log('Error al verificar Google Chrome:', stderr);
+  } else {
+    console.log('Ruta de Google Chrome:', stdout);
+  }
 });
 
 // Verificar si Chromium está instalado
 exec('which chromium', (err, stdout, stderr) => {
-    if (err) {
-        console.log('Error al verificar Chromium:', stderr);
-    } else {
-        console.log('Ruta de Chromium:', stdout);
-    }
+  if (err) {
+    console.log('Error al verificar Chromium:', stderr);
+  } else {
+    console.log('Ruta de Chromium:', stdout);
+  }
 });
-
