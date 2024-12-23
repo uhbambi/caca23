@@ -28,9 +28,9 @@ const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
 // Función para monitorear la página
 async function monitorPage() {
     const browser = await puppeteer.launch({
-        headless: true,  // Habilitar modo headless
-        executablePath: '/usr/bin/google-chrome',  // Path a Google Chrome (si está instalado)
-        args: ['--no-sandbox', '--disable-setuid-sandbox']  // Para entornos restringidos
+        headless: true,
+        executablePath: puppeteer.executablePath(), // Usar navegador interno
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
