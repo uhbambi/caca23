@@ -1,27 +1,24 @@
 {
   "name": "puppeteer-discord-bot",
   "version": "1.0.0",
-  "description": "Bot de Discord con Puppeteer para monitorear y reportar actividades.",
+  "description": "Proyecto de Puppeteer y Discord.js",
   "main": "los2.cjs",
-"scripts": {
+  "scripts": {
     "setup-and-start": "npm run install-chrome && npm run start",
     "start": "node los2.cjs",
-    "install-chrome": "puppeteer install --force", 
+    "install-chrome": "puppeteer install --force",
     "postinstall": "puppeteer install --force",
     "debug": "node -e \"console.log(require('puppeteer').executablePath())\"",
-    "clean-install": "rm -rf node_modules && npm install"
+    "clean-install": "rm -rf node_modules && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
-  "keywords": ["puppeteer", "discord", "bot", "automation"],
+  "keywords": [],
   "author": "caca",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "14.16.3",
-    "dotenv": "10.0.0",
-    "puppeteer": "23.10.2"
-  },
-  "engines": {
-    "node": ">=16.0.0"
+    "discord.js": "^14.16.3",
+    "dotenv": "^10.0.0",
+    "puppeteer": "^23.10.2"
   }
 }
