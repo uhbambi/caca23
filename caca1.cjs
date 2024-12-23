@@ -26,11 +26,14 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
 
 // Función para monitorear la página
+const chromePath = '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome'; // Ruta predeterminada de Puppeteer
+
+// Monitorear la página
 const startBot = async () => {
   const browser = await puppeteer.launch({
-    executablePath: puppeteer.executablePath(), // Obtiene la ruta automáticamente
+    executablePath: chromePath,
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'], // Importante para entornos sin GUI como Koyeb
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   const page = await browser.newPage();
