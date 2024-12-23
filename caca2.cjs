@@ -1,16 +1,15 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const { Client, GatewayIntentBits } = require('discord.js');
 
-// Mapeo de códigos de país a banderas en formato código de país
 const countryFlags = {
-    "do": ":flag_do:", "us": ":flag_us:", "mx": ":flag_mx:", "es": ":flag_es:", "fr": ":flag_fr:", "de": ":flag_de:", "br": ":flag_br:", "ar": ":flag_ar:",
-    "it": ":flag_it:", "jp": ":flag_jp:", "ca": ":flag_ca:", "gb": ":flag_gb:", "ru": ":flag_ru:", "cn": ":flag_cn:", "in": ":flag_in:", "au": ":flag_au:",
-    "za": ":flag_za:", "kr": ":flag_kr:", "ng": ":flag_ng:", "pl": ":flag_pl:", "se": ":flag_se:", "no": ":flag_no:", "fi": ":flag_fi:", "dk": ":flag_dk:",
-    "nl": ":flag_nl:", "ch": ":flag_ch:", "be": ":flag_be:", "at": ":flag_at:", "cz": ":flag_cz:", "gr": ":flag_gr:", "hu": ":flag_hu:", "ro": ":flag_ro:",
-    "bg": ":flag_bg:", "il": ":flag_il:", "hr": ":flag_hr:", "pk": ":flag_pk:", "ke": ":flag_ke:", "sa": ":flag_sa:", "th": ":flag_th:", "ae": ":flag_ae:",
-    "my": ":flag_my:", "ph": ":flag_ph:", "id": ":flag_id:", "vn": ":flag_vn:", "ua": ":flag_ua:", "kw": ":flag_kw:", "qa": ":flag_qa:", "om": ":flag_om:",
-    "eg": ":flag_eg:", "cl": ":flag_cl:", "pe": ":flag_pe:", "ec": ":flag_ec:", "co": ":flag_co:", "ve": ":flag_ve:", "py": ":flag_py:", "uy": ":flag_uy:",
-    "zz": ":hammer_and_pick:" // Bandera desconocida
+  "do": ":flag_do:", "us": ":flag_us:", "mx": ":flag_mx:", "es": ":flag_es:", "fr": ":flag_fr:", "de": ":flag_de:", "br": ":flag_br:", "ar": ":flag_ar:",
+  "it": ":flag_it:", "jp": ":flag_jp:", "ca": ":flag_ca:", "gb": ":flag_gb:", "ru": ":flag_ru:", "cn": ":flag_cn:", "in": ":flag_in:", "au": ":flag_au:",
+  "za": ":flag_za:", "kr": ":flag_kr:", "ng": ":flag_ng:", "pl": ":flag_pl:", "se": ":flag_se:", "no": ":flag_no:", "fi": ":flag_fi:", "dk": ":flag_dk:",
+  "nl": ":flag_nl:", "ch": ":flag_ch:", "be": ":flag_be:", "at": ":flag_at:", "cz": ":flag_cz:", "gr": ":flag_gr:", "hu": ":flag_hu:", "ro": ":flag_ro:",
+  "bg": ":flag_bg:", "il": ":flag_il:", "hr": ":flag_hr:", "pk": ":flag_pk:", "ke": ":flag_ke:", "sa": ":flag_sa:", "th": ":flag_th:", "ae": ":flag_ae:",
+  "my": ":flag_my:", "ph": ":flag_ph:", "id": ":flag_id:", "vn": ":flag_vn:", "ua": ":flag_ua:", "kw": ":flag_kw:", "qa": ":flag_qa:", "om": ":flag_om:",
+  "eg": ":flag_eg:", "cl": ":flag_cl:", "pe": ":flag_pe:", "ec": ":flag_ec:", "co": ":flag_co:", "ve": ":flag_ve:", "py": ":flag_py:", "uy": ":flag_uy:",
+  "zz": ":hammer_and_pick:" // Bandera desconocida
 };
 
 // Configuración del cliente Discord
@@ -20,24 +19,22 @@ require('dotenv').config();
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Cambia esto por tu canal
 
-// Ruta de Google Chrome
-const chromePath = '/usr/bin/google-chrome'; // Aquí coloca la ruta a tu instalación de Chrome, si no está en este directorio.
+// Ruta de Chromium en Koyeb
+const chromePath = '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome'; // Ruta predeterminada de Puppeteer
 
 // Monitorear la página
 const startBot = async () => {
   const browser = await puppeteer.launch({
     executablePath: chromePath,
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'], // Importante para entornos sin GUI como Koyeb
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
   const page = await browser.newPage();
   await page.goto('https://pixelplanet.fun/chat/1');
 
-  // Esperar el contenedor de mensajes
   await page.waitForSelector('.chatmsg');
 
-  // Exponer función para enviar mensajes a Discord
   await page.exposeFunction('sendMessageToDiscord', async (message, username, time, countryCode, type) => {
     if (username.toLowerCase() === 'sallbot' || type === 'event') {
       const cleanMessage = message.replace(/(@everyone|@here)/g, '[MENCIÓN FILTRADA]').trim();
@@ -53,7 +50,6 @@ const startBot = async () => {
     }
   });
 
-  // Configurar MutationObserver
   await page.evaluate(() => {
     const observer = new MutationObserver(mutationsList => {
       for (const mutation of mutationsList) {
@@ -76,9 +72,9 @@ const startBot = async () => {
     const container = document.querySelector('.chatmsg');
     if (container) observer.observe(container.parentElement, { childList: true, subtree: true });
   });
-};
+}
 
-// Verificar instalación de Google Chrome
+// Verificar instalación de Chrome/Chromium
 const { exec } = require('child_process');
 exec('which google-chrome', (err, stdout, stderr) => {
   if (err) console.log('Google Chrome no encontrado:', stderr.trim());
