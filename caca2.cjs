@@ -26,9 +26,9 @@ const chromePath = '/usr/bin/google-chrome'; // Aquí coloca la ruta a tu instal
 // Monitorear la página
 async function monitorPage() {
     const browser = await puppeteer.launch({
-        headless: true, // Asegura que Puppeteer use el modo headless
-        executablePath: chromePath, // Usa la ruta de Google Chrome
-        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Recomendado para entornos limitados (como servidores)
+        headless: true,
+        executablePath: puppeteer.executablePath(), // Usar navegador interno
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
