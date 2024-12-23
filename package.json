@@ -1,22 +1,27 @@
 {
-  "name": "cacaopro",
+  "name": "puppeteer-discord-bot",
   "version": "1.0.0",
-  "description": "Proyecto de Puppeteer y Discord.js",
+  "description": "Bot de Discord con Puppeteer para monitorear y reportar actividades.",
   "main": "los2.cjs",
   "scripts": {
-    "setup-and-start": "npm run start",
+    "setup-and-start": "npm run install-chrome && npm run start",
     "start": "node los2.cjs",
     "install-chrome": "puppeteer install",
     "postinstall": "puppeteer install --force",
+    "clean-install": "rm -rf node_modules && npm install",
+    "debug": "node -e \"console.log('Puppeteer Path:', require('puppeteer').executablePath());\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
-  "keywords": [],
+  "keywords": ["puppeteer", "discord", "bot", "automation"],
   "author": "caca",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.16.3",
-    "dotenv": "^10.0.0",
-    "puppeteer": "^23.10.2"
+    "discord.js": "14.16.3",
+    "dotenv": "10.0.0",
+    "puppeteer": "23.10.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
