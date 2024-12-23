@@ -7,7 +7,7 @@
     "setup-and-start": "npm run start",
     "start": "node los2.cjs",
     "install-chrome": "puppeteer install",
-    "postinstall": "npm run install-chrome",
+    "postinstall": "puppeteer install --force",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
