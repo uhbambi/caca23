@@ -23,6 +23,7 @@ const CHANNEL_ID = '1314014143044386877'; // Cambia esto por tu canal
 const chromePath = '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome'; // Ruta predeterminada de Puppeteer
 
 // Monitorear la página
+async function startBot() 
 const browser = await puppeteer.launch({
   executablePath: '/app/.cache/puppeteer/chrome/linux-131.0.6778.87/chrome-linux64/chrome', // Cambia según sea necesario
   headless: true,
