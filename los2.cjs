@@ -1,19 +1,14 @@
 const { exec } = require('child_process');
+const puppeteer = require('puppeteer');
 
-// Ruta del ejecutable de Google Chrome
-const chromePath = '/usr/bin/google-chrome';
+// Detectar el navegador de Puppeteer
+(async () => {
+  const chromePath = puppeteer.executablePath();
 
-// Verificar si Google Chrome está instalado antes de ejecutar los scripts
-exec(`which ${chromePath}`, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Google Chrome no está instalado o no se encontró en ${chromePath}: ${error.message}`);
-    return;
-  }
-  
-  console.log(`Google Chrome encontrado en: ${stdout.trim()}`);
+  console.log(`Navegador encontrado en: ${chromePath}`);
 
   // Ejecutar el primer archivo (caca1.cjs)
-  const process1 = exec('node caca1.cjs', (error, stdout, stderr) => {
+  exec('node caca1.cjs', (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar caca1.cjs: ${error.message}`);
       return;
@@ -26,7 +21,7 @@ exec(`which ${chromePath}`, (error, stdout, stderr) => {
   });
 
   // Ejecutar el segundo archivo (caca2.cjs)
-  const process2 = exec('node caca2.cjs', (error, stdout, stderr) => {
+  exec('node caca2.cjs', (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar caca2.cjs: ${error.message}`);
       return;
@@ -37,4 +32,5 @@ exec(`which ${chromePath}`, (error, stdout, stderr) => {
     }
     console.log(`stdout (caca2.cjs): ${stdout}`);
   });
-});
+})();
+
