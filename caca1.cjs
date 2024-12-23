@@ -26,12 +26,12 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = '1314014143044386877'; // Pon el ID de tu canal aquí
 
 // Función para monitorear la página
-async function monitorPage() {
-    const browser = await puppeteer.launch({
-        headless: true,
-        executablePath: puppeteer.executablePath(), // Usar navegador interno
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+const startBot = async () => {
+  const browser = await puppeteer.launch({
+    executablePath: puppeteer.executablePath(), // Obtiene la ruta automáticamente
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'], // Importante para entornos sin GUI como Koyeb
+  });
 
     const page = await browser.newPage();
     await page.goto('https://pixelplanet.fun/chat/907'); // URL de la página
